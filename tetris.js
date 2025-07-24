@@ -10,6 +10,85 @@
  */
 
 // ============================================================================
+// SOUND SYSTEM
+// ============================================================================
+
+let audioContext = null;
+let soundEnabled = true;
+let volume = 0.3; // Default volume (30%)
+
+// Initialize audio context
+function initAudio() {
+    try {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        console.log('Audio context initialized');
+    } catch (error) {
+        console.log('Audio not supported:', error);
+        soundEnabled = false;
+    }
+}
+
+// Generate beep sound
+function playBeep(frequency = 800, duration = 100, type = 'square') {
+    if (!soundEnabled || !audioContext) return;
+    
+    try {
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+        oscillator.type = type;
+        
+        gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+        gainNode.gain.linearRampToValueAtTime(volume, audioContext.currentTime + 0.01);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + duration / 1000);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + duration / 1000);
+    } catch (error) {
+        console.log('Sound playback error:', error);
+    }
+}
+
+// Sound effects for different actions
+const sounds = {
+    move: () => playBeep(600, 50, 'square'),      // Lower pitch, short
+    rotate: () => playBeep(800, 80, 'square'),    // Medium pitch
+    drop: () => playBeep(400, 120, 'sawtooth'),   // Lower pitch, longer
+    lineClear: () => playBeep(1000, 200, 'sine'), // High pitch, longer
+    tetris: () => playBeep(1200, 300, 'sine'),    // Highest pitch, longest
+    levelUp: () => playBeep(800, 150, 'triangle'), // Medium pitch, triangle wave
+    gameOver: () => playBeep(200, 500, 'sawtooth'), // Very low pitch, long
+    pause: () => playBeep(600, 100, 'square')     // Medium pitch
+};
+
+// Toggle sound on/off
+function toggleSound() {
+    soundEnabled = !soundEnabled;
+    localStorage.setItem('tetrisSoundEnabled', soundEnabled.toString());
+    updateSoundButton();
+    
+    // Play a test sound if enabling
+    if (soundEnabled && audioContext) {
+        sounds.move();
+    }
+}
+
+// Update sound button appearance
+function updateSoundButton() {
+    const soundBtn = document.getElementById('sound-toggle');
+    if (soundBtn) {
+        soundBtn.textContent = soundEnabled ? '🔊' : '🔇';
+        soundBtn.title = soundEnabled ? 
+            (currentLanguage === 'ru' ? 'Выключить звук' : 'Mute Sound') :
+            (currentLanguage === 'ru' ? 'Включить звук' : 'Unmute Sound');
+    }
+}
+
+// ============================================================================
 // LANGUAGE MANAGEMENT
 // ============================================================================
 
@@ -241,6 +320,17 @@ function updateLanguageUI() {
     
     // Update feedback display
     updateFeedbackDisplay();
+    
+    // Update sound controls
+    const soundTitle = document.querySelector('.sound-title');
+    if (soundTitle) {
+        const dataAttr = `data-${currentLanguage}`;
+        if (soundTitle.hasAttribute(dataAttr)) {
+            soundTitle.textContent = soundTitle.getAttribute(dataAttr);
+        }
+    }
+    
+    updateSoundButton();
 }
 
 // Check for saved language preference
@@ -402,6 +492,7 @@ class TetrisModel {
         if (!this.isValidPosition(this.currentPiece, 0, 0)) {
             this.gameOver = true;
             this.gameOverTime = Date.now();
+            sounds.gameOver(); // Play game over sound
             console.log('Game Over! Restarting in 10 seconds...');
         }
     }
@@ -460,6 +551,7 @@ class TetrisModel {
         if (this.isValidPosition(this.currentPiece, dx, dy)) {
             this.currentPiece.x += dx;
             this.currentPiece.y += dy;
+            sounds.move(); // Play move sound
             return true;
         }
         return false;
@@ -492,6 +584,7 @@ class TetrisModel {
                 this.currentPiece = rotated;
                 this.currentPiece.x += attempt.dx;
                 this.currentPiece.y += attempt.dy;
+                sounds.rotate(); // Play rotation sound
                 return;
             }
         }
@@ -518,6 +611,8 @@ class TetrisModel {
         // Update statistics
         this.piecesPlaced++;
         this.canHold = true; // Reset hold ability for next piece
+        
+        sounds.drop(); // Play drop sound
     }
     
     /**
@@ -543,6 +638,8 @@ class TetrisModel {
         this.currentPiece.y = 0;
         
         this.canHold = false; // Can only hold once per piece
+        
+        sounds.rotate(); // Play hold sound (same as rotation)
     }
     
     /**
@@ -577,6 +674,13 @@ class TetrisModel {
         
         if (linesToClear.length > 0) {
             console.log('Starting line clear animation for lines:', linesToClear);
+            
+            // Play appropriate sound based on lines cleared
+            if (linesToClear.length === 4) {
+                sounds.tetris(); // Tetris sound for 4 lines
+            } else {
+                sounds.lineClear(); // Regular line clear sound
+            }
             
             // Enhanced scoring system
             this.updateScore(linesToClear.length);
@@ -637,6 +741,7 @@ class TetrisModel {
         if (newLevel > this.level) {
             this.level = newLevel;
             this.dropInterval = Math.max(50, 1000 - (this.level - 1) * 50); // Speed up with level
+            sounds.levelUp(); // Play level up sound
         }
     }
     
@@ -742,6 +847,7 @@ class TetrisModel {
         if (!this.isPaused) {
             this.pauseStartTime = Date.now();
             this.isPaused = true;
+            sounds.pause(); // Play pause sound
         }
     }
     
@@ -752,6 +858,7 @@ class TetrisModel {
         if (this.isPaused) {
             this.totalPauseTime += Date.now() - this.pauseStartTime;
             this.isPaused = false;
+            sounds.pause(); // Play pause sound (same for unpause)
         }
     }
     
@@ -1149,6 +1256,16 @@ function initializeGame() {
         if (gameBoard) {
             gameBoard.style.display = 'block';
         }
+        
+        // Initialize audio system
+        initAudio();
+        
+        // Load sound preferences
+        const savedSoundEnabled = localStorage.getItem('tetrisSoundEnabled');
+        if (savedSoundEnabled !== null) {
+            soundEnabled = savedSoundEnabled === 'true';
+        }
+        updateSoundButton();
         
     } catch (error) {
         console.error('Error initializing game:', error);
