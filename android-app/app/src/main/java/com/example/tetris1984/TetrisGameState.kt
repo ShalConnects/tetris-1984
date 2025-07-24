@@ -4,6 +4,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import kotlin.random.Random
+import android.content.Context
+import android.content.SharedPreferences
+import android.media.AudioManager
+import android.media.ToneGenerator
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 
 /**
  * Tetris Game State
@@ -16,6 +23,10 @@ import kotlin.random.Random
  * - Unbiased randomizer
  * - Simple scoring
  * - Line clearing animation
+ * - Hold piece functionality
+ * - Sound effects
+ * - High score tracking
+ * - Preference storage
  */
 class TetrisGameState {
     companion object {
@@ -33,7 +44,16 @@ class TetrisGameState {
     var nextPiece by mutableStateOf<TetrisPiece?>(null)
         private set
     
+    var heldPiece by mutableStateOf<TetrisPiece?>(null)
+        private set
+    
+    var canHold by mutableStateOf(true)
+        private set
+    
     var score by mutableStateOf(0)
+        private set
+    
+    var highScore by mutableStateOf(0)
         private set
     
     var lines by mutableStateOf(0)
@@ -60,6 +80,16 @@ class TetrisGameState {
     private val restartDelay = 10000L // 10 seconds
     var restartCountdown by mutableStateOf(10)
         private set
+    
+    // Sound system
+    private var toneGenerator: ToneGenerator? = null
+    private var vibrator: Vibrator? = null
+    private var soundEnabled = true
+    private var volume = 0.7f
+    private var soundOptions = mapOf("move" to true, "rotate" to true, "drop" to true, "line" to true)
+    
+    // Preferences
+    private var prefs: SharedPreferences? = null
     
     // Piece definitions (original 1984 shapes)
     private val pieces = mapOf(
@@ -96,6 +126,181 @@ class TetrisGameState {
     
     init {
         reset()
+        loadHighScore()
+    }
+    
+    /**
+     * Initialize sound system
+     */
+    fun initSound(context: Context) {
+        try {
+            toneGenerator = ToneGenerator(AudioManager.STREAM_MUSIC, 100)
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+                vibrator = vibratorManager.defaultVibrator
+            } else {
+                @Suppress("DEPRECATION")
+                vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+            }
+        } catch (e: Exception) {
+            // Sound not available
+        }
+        
+        // Initialize preferences
+        prefs = context.getSharedPreferences("tetris_prefs", Context.MODE_PRIVATE)
+        loadPreferences()
+    }
+    
+    /**
+     * Play sound effect
+     */
+    private fun playSound(type: String) {
+        if (!soundEnabled || !(soundOptions[type] ?: true)) return
+        
+        try {
+            val toneType = when (type) {
+                "move" -> ToneGenerator.TONE_DTMF_1
+                "rotate" -> ToneGenerator.TONE_DTMF_2
+                "drop" -> ToneGenerator.TONE_DTMF_3
+                "line" -> ToneGenerator.TONE_DTMF_4
+                "tetris" -> ToneGenerator.TONE_DTMF_5
+                "levelUp" -> ToneGenerator.TONE_DTMF_6
+                "gameOver" -> ToneGenerator.TONE_DTMF_7
+                "pause" -> ToneGenerator.TONE_DTMF_8
+                else -> ToneGenerator.TONE_DTMF_1
+            }
+            
+            toneGenerator?.startTone(toneType, (100 * volume).toInt())
+            
+            // Add haptic feedback
+            if (volume > 0.3f) {
+                val duration = when (type) {
+                    "move" -> 10L
+                    "rotate" -> 20L
+                    "drop" -> 30L
+                    "line" -> 50L
+                    else -> 25L
+                }
+                vibrator?.vibrate(VibrationEffect.createOneShot(duration, VibrationEffect.DEFAULT_AMPLITUDE))
+            }
+        } catch (e: Exception) {
+            // Sound failed
+        }
+    }
+    
+    /**
+     * Save language preference
+     */
+    fun saveLanguage(language: String) {
+        prefs?.edit()?.putString("language", language)?.apply()
+    }
+    
+    /**
+     * Get saved language preference
+     */
+    fun getSavedLanguage(): String? {
+        return prefs?.getString("language", null)
+    }
+    
+    /**
+     * Save sound enabled state
+     */
+    fun saveSoundEnabled(enabled: Boolean) {
+        soundEnabled = enabled
+        prefs?.edit()?.putBoolean("sound_enabled", enabled)?.apply()
+    }
+    
+    /**
+     * Get saved sound enabled state
+     */
+    fun getSavedSoundEnabled(): Boolean {
+        return prefs?.getBoolean("sound_enabled", true) ?: true
+    }
+    
+    /**
+     * Save volume
+     */
+    fun saveVolume(newVolume: Float) {
+        volume = newVolume
+        prefs?.edit()?.putFloat("volume", newVolume)?.apply()
+    }
+    
+    /**
+     * Get saved volume
+     */
+    fun getSavedVolume(): Float {
+        return prefs?.getFloat("volume", 0.7f) ?: 0.7f
+    }
+    
+    /**
+     * Save sound options
+     */
+    fun saveSoundOptions(options: Map<String, Boolean>) {
+        soundOptions = options
+        prefs?.edit()?.apply {
+            putBoolean("sound_move", options["move"] ?: true)
+            putBoolean("sound_rotate", options["rotate"] ?: true)
+            putBoolean("sound_drop", options["drop"] ?: true)
+            putBoolean("sound_line", options["line"] ?: true)
+        }?.apply()
+    }
+    
+    /**
+     * Get saved sound options
+     */
+    fun getSavedSoundOptions(): Map<String, Boolean> {
+        return mapOf(
+            "move" to (prefs?.getBoolean("sound_move", true) ?: true),
+            "rotate" to (prefs?.getBoolean("sound_rotate", true) ?: true),
+            "drop" to (prefs?.getBoolean("sound_drop", true) ?: true),
+            "line" to (prefs?.getBoolean("sound_line", true) ?: true)
+        )
+    }
+    
+    /**
+     * Save feedback counts
+     */
+    fun saveFeedbackCounts(counts: Map<String, Int>) {
+        prefs?.edit()?.apply {
+            putInt("feedback_like", counts["like"] ?: 0)
+            putInt("feedback_dislike", counts["dislike"] ?: 0)
+        }?.apply()
+    }
+    
+    /**
+     * Get saved feedback counts
+     */
+    fun getSavedFeedbackCounts(): Map<String, Int> {
+        return mapOf(
+            "like" to (prefs?.getInt("feedback_like", 0) ?: 0),
+            "dislike" to (prefs?.getInt("feedback_dislike", 0) ?: 0)
+        )
+    }
+    
+    /**
+     * Load all preferences
+     */
+    private fun loadPreferences() {
+        soundEnabled = getSavedSoundEnabled()
+        volume = getSavedVolume()
+        soundOptions = getSavedSoundOptions()
+    }
+    
+    /**
+     * Load high score
+     */
+    private fun loadHighScore() {
+        highScore = prefs?.getInt("high_score", 0) ?: 0
+    }
+    
+    /**
+     * Save high score
+     */
+    private fun saveHighScore() {
+        if (score > highScore) {
+            highScore = score
+            prefs?.edit()?.putInt("high_score", highScore)?.apply()
+        }
     }
     
     /**
@@ -127,6 +332,7 @@ class TetrisGameState {
         linesToClear.clear()
         flashCount = 0
         spawnNewPiece()
+        saveHighScore() // Save high score after reset
     }
     
     /**
@@ -134,6 +340,11 @@ class TetrisGameState {
      */
     fun togglePause() {
         isPaused = !isPaused
+        if (isPaused) {
+            playSound("pause")
+        } else {
+            playSound("resume") // Assuming a resume sound
+        }
     }
     
     /**
@@ -144,6 +355,7 @@ class TetrisGameState {
             currentPiece?.let { piece ->
                 if (isValidPosition(piece.x - 1, piece.y, piece.shape)) {
                     currentPiece = piece.copy(x = piece.x - 1)
+                    playSound("move")
                 }
             }
         }
@@ -157,6 +369,7 @@ class TetrisGameState {
             currentPiece?.let { piece ->
                 if (isValidPosition(piece.x + 1, piece.y, piece.shape)) {
                     currentPiece = piece.copy(x = piece.x + 1)
+                    playSound("move")
                 }
             }
         }
@@ -171,6 +384,7 @@ class TetrisGameState {
                 if (isValidPosition(piece.x, piece.y + 1, piece.shape)) {
                     currentPiece = piece.copy(y = piece.y + 1)
                     score += 2 // Bonus for soft drop
+                    playSound("drop")
                 } else {
                     placePiece()
                     clearLines()
@@ -189,8 +403,22 @@ class TetrisGameState {
                 val rotatedShape = rotateShape(piece.shape)
                 if (isValidPosition(piece.x, piece.y, rotatedShape)) {
                     currentPiece = piece.copy(shape = rotatedShape)
+                    playSound("rotate")
                 }
             }
+        }
+    }
+    
+    /**
+     * Hold current piece
+     */
+    fun holdPiece() {
+        if (!isPaused && !isGameOver && canHold) {
+            val tempPiece = currentPiece
+            currentPiece = heldPiece
+            heldPiece = tempPiece
+            canHold = false
+            playSound("hold")
         }
     }
     
@@ -245,6 +473,7 @@ class TetrisGameState {
         if (!isValidPosition(currentPiece!!.x, currentPiece!!.y, currentPiece!!.shape)) {
             isGameOver = true
             gameOverTime = System.currentTimeMillis()
+            playSound("gameOver")
         }
     }
     
@@ -333,6 +562,7 @@ class TetrisGameState {
                     board[y][x] = 2 // 2 = flashing
                 }
             }
+            playSound("line")
         }
     }
     
@@ -378,6 +608,7 @@ class TetrisGameState {
         lines += linesToClear.size
         score += linesToClear.size * 100 // Original 1984 scoring
         level = (lines / 10) + 1
+        playSound("levelUp")
         
         // Reset animation state
         linesToClear.clear()

@@ -7,7 +7,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.tetris1984.ui.theme.Tetris1984Theme
 
@@ -27,11 +30,27 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    TetrisGame()
+                    TetrisGameWithContext()
                 }
             }
         }
     }
+}
+
+/**
+ * TetrisGame with context for sound initialization
+ */
+@Composable
+fun TetrisGameWithContext() {
+    val context = LocalContext.current
+    val gameState = remember { TetrisGameState() }
+    
+    // Initialize sound system
+    LaunchedEffect(Unit) {
+        gameState.initSound(context)
+    }
+    
+    TetrisGame()
 }
 
 @Preview(showBackground = true)
