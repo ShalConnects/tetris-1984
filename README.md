@@ -1,5 +1,7 @@
 # 1984 Tetris - Original Replica
 
+A pure‑bred 1984 Tetris experience, now on the web (HTML5/JavaScript) and Android (Kotlin/Jetpack Compose), served in monochrome glory. Stack your blocks exactly how Alexey Pajitnov intended—no wall‑kicks, no bias, just seven tetrominoes dancing in a grid.
+
 A faithful recreation of the original 1984 Tetris game as it appeared on the Elektronika 60 computer, implemented in pure HTML5, CSS, and JavaScript.
 
 ## Features
@@ -125,4 +127,4 @@ This is an educational recreation of the original Tetris game. Tetris is a regis
 
 - Original Tetris created by Alexey Pajitnov (1984)
 - This recreation is for educational purposes
-- Monochrome green aesthetic inspired by the Elektronika 60 terminal 
+- Monochrome green aesthetic inspired by the Elektronika 60 terminal
