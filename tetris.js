@@ -89,55 +89,24 @@ function selectLanguage(lang) {
 function updateLanguageUI() {
     const lang = strings[currentLanguage];
     
-    // Update score lines
-    document.querySelectorAll('.score-line').forEach((element, index) => {
-        const spans = element.querySelectorAll('span');
-        if (spans.length > 0) {
-            const value = spans[0].textContent;
-            switch(index) {
-                case 0:
-                    element.innerHTML = lang.fullLines + '<span id="lines">' + value + '</span>';
-                    break;
-                case 1:
-                    element.innerHTML = lang.level + '<span id="level">' + value + '</span>';
-                    break;
-                case 2:
-                    element.innerHTML = lang.score + '<span id="score">' + value + '</span>';
-                    break;
+    // Update score lines using data attributes
+    document.querySelectorAll('.score-line').forEach((element) => {
+        const dataAttr = `data-${currentLanguage}`;
+        if (element.hasAttribute(dataAttr)) {
+            const spans = element.querySelectorAll('span');
+            if (spans.length > 0) {
+                const value = spans[0].textContent;
+                const prefix = element.getAttribute(dataAttr).split(':')[0] + ': ';
+                element.innerHTML = prefix + '<span id="' + spans[0].id + '">' + value + '</span>';
             }
         }
     });
     
-    // Update control lines
-    document.querySelectorAll('.control-line').forEach((element, index) => {
-        switch(index) {
-            case 0:
-                element.textContent = lang.controls.left;
-                break;
-            case 1:
-                element.textContent = lang.controls.right;
-                break;
-            case 2:
-                element.textContent = lang.controls.rotate;
-                break;
-            case 3:
-                element.textContent = lang.controls.accelerate;
-                break;
-            case 4:
-                element.textContent = lang.controls.hardDrop;
-                break;
-            case 5:
-                element.textContent = lang.controls.reset;
-                break;
-            case 6:
-                element.textContent = lang.controls.hold;
-                break;
-            case 7:
-                element.textContent = lang.controls.pause;
-                break;
-            case 8:
-                element.textContent = lang.controls.title;
-                break;
+    // Update control lines using data attributes
+    document.querySelectorAll('.control-line').forEach((element) => {
+        const dataAttr = `data-${currentLanguage}`;
+        if (element.hasAttribute(dataAttr)) {
+            element.textContent = element.getAttribute(dataAttr);
         }
     });
     
@@ -1089,21 +1058,9 @@ document.addEventListener('DOMContentLoaded', () => {
         initializeGame();
     }
     
-    // Fallback: ensure game starts after 3 seconds if not already started
+    // Debug: Add a manual start button for testing (only if no language selected)
     setTimeout(() => {
-        if (!window.tetrisController) {
-            console.log('Fallback: Starting game...');
-            const modal = document.getElementById('languageModal');
-            if (modal) {
-                modal.style.display = 'none';
-            }
-            initializeGame();
-        }
-    }, 3000);
-    
-    // Debug: Add a manual start button for testing
-    setTimeout(() => {
-        if (!window.tetrisController) {
+        if (!window.tetrisController && !localStorage.getItem('tetrisLanguage')) {
             console.log('Adding debug start button...');
             const debugBtn = document.createElement('button');
             debugBtn.textContent = 'Start Game (Debug)';
