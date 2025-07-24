@@ -69,10 +69,12 @@ function selectLanguage(lang) {
     // Update UI text
     updateLanguageUI();
     
-    // Start the game
-    if (!window.tetrisController) {
-        initializeGame();
-    }
+    // Start the game immediately
+    setTimeout(() => {
+        if (!window.tetrisController) {
+            initializeGame();
+        }
+    }, 100);
 }
 
 function updateLanguageUI() {
@@ -1045,4 +1047,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // Language already selected, start game
         initializeGame();
     }
+    
+    // Fallback: ensure game starts after 2 seconds if not already started
+    setTimeout(() => {
+        if (!window.tetrisController) {
+            console.log('Fallback: Starting game...');
+            document.getElementById('languageModal').style.display = 'none';
+            initializeGame();
+        }
+    }, 2000);
 }); 
