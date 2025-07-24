@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>1984 Tetris - Original Replica</title>
+    <title>Tetris 1984</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -20,8 +20,8 @@
 
     <!-- Game Header -->
     <div class="game-header">
-        <h1 class="game-title" data-ru="Ретро Клон Тетриса" data-en="Retro Tetris Clone">Retro Tetris Clone</h1>
-        <p class="game-description" data-ru="Аутентичный опыт Тетриса 1984 года, теперь в веб-версии (HTML5/JavaScript) и на Android (Kotlin/Jetpack Compose), представленный в монохромном великолепии. Складывайте блоки точно так, как задумал Алексей Пажитнов — без стен-киков, без предвзятости, только семь тетромино танцуют в сетке 10×20. Используйте стрелки или касания/свайпы на экране для движения и поворота; наблюдайте, как исчезают ряды, и счет тихо растет. Идеально для демонстрации классической игровой логики, обучения обнаружению столкновений или переживания того адреналина от падения блоков." data-en="A pure‑bred 1984 Tetris experience, now on the web (HTML5/JavaScript) and Android (Kotlin/Jetpack Compose), served in monochrome glory. Stack your blocks exactly how Alexey Pajitnov intended—no wall‑kicks, no bias, just seven tetrominoes dancing in a 10×20 grid. Hit arrow or tap/swipe on‑screen controls to move and rotate; watch rows vanish and score quietly tick up. Perfect for demoing classic game logic, teaching collision detection, or reliving that block‑drop adrenaline.">A pure‑bred 1984 Tetris experience, now on the web (HTML5/JavaScript) and Android (Kotlin/Jetpack Compose), served in monochrome glory. Stack your blocks exactly how Alexey Pajitnov intended—no wall‑kicks, no bias, just seven tetrominoes dancing in a 10×20 grid. Hit arrow or tap/swipe on‑screen controls to move and rotate; watch rows vanish and score quietly tick up. Perfect for demoing classic game logic, teaching collision detection, or reliving that block‑drop adrenaline.</p>
+        <h1 class="game-title" data-ru="Тетрис 1984" data-en="Tetris 1984">Tetris 1984</h1>
+        <p class="game-description" data-ru="Аутентичный опыт Тетриса 1984 года, теперь в веб-версии (HTML5/JavaScript) и на Android (Kotlin/Jetpack Compose), представленный в монохромном великолепии. Складывайте блоки точно так, как задумал Алексей Пажитнов — без стен-киков, без предвзятости, только семь тетромино танцуют в сетке." data-en="A pure‑bred 1984 Tetris experience, now on the web (HTML5/JavaScript) and Android (Kotlin/Jetpack Compose), served in monochrome glory. Stack your blocks exactly how Alexey Pajitnov intended—no wall‑kicks, no bias, just seven tetrominoes dancing in grid.">A pure‑bred 1984 Tetris experience, now on the web (HTML5/JavaScript) and Android (Kotlin/Jetpack Compose), served in monochrome glory. Stack your blocks exactly how Alexey Pajitnov intended—no wall‑kicks, no bias, just seven tetrominoes dancing in grid.</p>
     </div>
 
     <div class="game-container">
@@ -49,6 +49,15 @@
                     <pre id="holdPieceDisplay" class="hold-piece-ascii"></pre>
                 </div>
                 <div class="hold-piece-hint" data-ru="нажмите c для сохранения" data-en="press c to save">press c to save</div>
+            </div>
+            
+            <!-- Language Switcher -->
+            <div class="language-switcher">
+                <div class="language-switcher-title" data-ru="ЯЗЫК" data-en="LANGUAGE">LANGUAGE</div>
+                <div class="language-buttons-small">
+                    <button onclick="switchLanguage('en')" class="lang-btn-small" id="lang-en">EN</button>
+                    <button onclick="switchLanguage('ru')" class="lang-btn-small" id="lang-ru">RU</button>
+                </div>
             </div>
         </div>
         

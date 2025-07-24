@@ -86,6 +86,34 @@ function selectLanguage(lang) {
     }, 100);
 }
 
+function switchLanguage(lang) {
+    console.log('Language switched to:', lang);
+    currentLanguage = lang;
+    localStorage.setItem('tetrisLanguage', lang);
+    
+    // Update UI text
+    updateLanguageUI();
+    
+    // Update active button state
+    updateLanguageButtons();
+}
+
+function updateLanguageButtons() {
+    const enBtn = document.getElementById('lang-en');
+    const ruBtn = document.getElementById('lang-ru');
+    
+    if (enBtn && ruBtn) {
+        enBtn.classList.remove('active');
+        ruBtn.classList.remove('active');
+        
+        if (currentLanguage === 'en') {
+            enBtn.classList.add('active');
+        } else if (currentLanguage === 'ru') {
+            ruBtn.classList.add('active');
+        }
+    }
+}
+
 function updateLanguageUI() {
     const lang = strings[currentLanguage];
     
@@ -138,6 +166,18 @@ function updateLanguageUI() {
     if (androidTooltip) {
         androidTooltip.textContent = lang.androidTooltip;
     }
+    
+    // Update language switcher title
+    const languageSwitcherTitle = document.querySelector('.language-switcher-title');
+    if (languageSwitcherTitle) {
+        const dataAttr = `data-${currentLanguage}`;
+        if (languageSwitcherTitle.hasAttribute(dataAttr)) {
+            languageSwitcherTitle.textContent = languageSwitcherTitle.getAttribute(dataAttr);
+        }
+    }
+    
+    // Update language button states
+    updateLanguageButtons();
 }
 
 // Check for saved language preference
@@ -1075,22 +1115,5 @@ document.addEventListener('DOMContentLoaded', () => {
         initializeGame();
     }
     
-    // Debug: Add a manual start button for testing (only if no language selected)
-    setTimeout(() => {
-        if (!window.tetrisController && !localStorage.getItem('tetrisLanguage')) {
-            console.log('Adding debug start button...');
-            const debugBtn = document.createElement('button');
-            debugBtn.textContent = 'Start Game (Debug)';
-            debugBtn.style.position = 'fixed';
-            debugBtn.style.top = '10px';
-            debugBtn.style.right = '10px';
-            debugBtn.style.zIndex = '9999';
-            debugBtn.onclick = () => {
-                console.log('Manual start clicked');
-                document.getElementById('languageModal').style.display = 'none';
-                initializeGame();
-            };
-            document.body.appendChild(debugBtn);
-        }
-    }, 1000);
+
 }); 

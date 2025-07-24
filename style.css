@@ -432,4 +432,50 @@ body {
     margin-top: 5px;
     text-align: center;
     font-style: italic;
+}
+
+/* Language Switcher */
+.language-switcher {
+    border: 1px solid #00ff00;
+    padding: 10px;
+    background-color: #001100;
+    margin-top: 15px;
+}
+
+.language-switcher-title {
+    font-size: 12px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 8px;
+    color: #00ff00;
+    font-family: 'Courier New', monospace;
+    text-transform: uppercase;
+}
+
+.language-buttons-small {
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+}
+
+.lang-btn-small {
+    background-color: #001100;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    padding: 4px 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 30px;
+}
+
+.lang-btn-small:hover {
+    background-color: #00ff00;
+    color: #000;
+}
+
+.lang-btn-small.active {
+    background-color: #00ff00;
+    color: #000;
 } 
