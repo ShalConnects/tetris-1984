@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    
+    <!-- Monochrome green theme for 1984 Tetris -->
+    <color name="green_primary">#FF00FF00</color>
+    <color name="green_secondary">#FF00CC00</color>
+    <color name="green_dark">#FF003300</color>
+    <color name="green_light">#FF66FF66</color>
+    
+    <!-- Background colors -->
+    <color name="background_primary">#FF000000</color>
+    <color name="background_secondary">#FF001100</color>
+    
+    <!-- Game board colors -->
+    <color name="board_background">#FF000000</color>
+    <color name="board_grid">#FF003300</color>
+    <color name="piece_color">#FF00FF00</color>
+    <color name="piece_border">#FF00CC00</color>
+</resources> 

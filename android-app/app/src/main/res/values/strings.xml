@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">1984 Tetris</string>
+    <string name="score">СЧЕТ: %d</string>
+    <string name="lines">ПОЛНЫХ СТРОК: %d</string>
+    <string name="level">УРОВЕНЬ: %d</string>
+    <string name="game_over">ИГРА ОКОНЧЕНА</string>
+    <string name="restart">СБРОСИТЬ</string>
+    <string name="pause">ПАУЗА</string>
+    <string name="resume">ПРОДОЛЖИТЬ</string>
+</resources> 

@@ -1,0 +1,25 @@
+{
+  "name": "tetris-1984",
+  "version": "1.0.0",
+  "description": "A faithful recreation of the original 1984 Tetris game",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 8000",
+    "dev": "python -m http.server 8000"
+  },
+  "keywords": [
+    "tetris",
+    "game",
+    "1984",
+    "retro",
+    "javascript",
+    "html5"
+  ],
+  "author": "ShalConnects",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/tetris-1984.git"
+  },
+  "homepage": "https://yourusername.github.io/tetris-1984"
+} 
