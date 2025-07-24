@@ -366,10 +366,30 @@ function updateLanguageUI() {
         }
     }
     
-    // Update hint texts
+    // Update next piece and hold piece titles
+    const nextPieceTitle = document.querySelector('.next-piece-title');
+    const holdPieceTitle = document.querySelector('.hold-piece-title');
     const holdPieceHint = document.querySelector('.hold-piece-hint');
+    
+    if (nextPieceTitle) {
+        const dataAttr = `data-${currentLanguage}`;
+        if (nextPieceTitle.hasAttribute(dataAttr)) {
+            nextPieceTitle.textContent = nextPieceTitle.getAttribute(dataAttr);
+        }
+    }
+    
+    if (holdPieceTitle) {
+        const dataAttr = `data-${currentLanguage}`;
+        if (holdPieceTitle.hasAttribute(dataAttr)) {
+            holdPieceTitle.textContent = holdPieceTitle.getAttribute(dataAttr);
+        }
+    }
+    
     if (holdPieceHint) {
-        holdPieceHint.textContent = lang.hints.holdPiece;
+        const dataAttr = `data-${currentLanguage}`;
+        if (holdPieceHint.hasAttribute(dataAttr)) {
+            holdPieceHint.textContent = holdPieceHint.getAttribute(dataAttr);
+        }
     }
     
     // Update Android tooltip
