@@ -110,6 +110,23 @@ function updateLanguageUI() {
         }
     });
     
+    // Update header elements
+    const gameTitle = document.querySelector('.game-title');
+    if (gameTitle) {
+        const dataAttr = `data-${currentLanguage}`;
+        if (gameTitle.hasAttribute(dataAttr)) {
+            gameTitle.textContent = gameTitle.getAttribute(dataAttr);
+        }
+    }
+    
+    const gameDescription = document.querySelector('.game-description');
+    if (gameDescription) {
+        const dataAttr = `data-${currentLanguage}`;
+        if (gameDescription.hasAttribute(dataAttr)) {
+            gameDescription.textContent = gameDescription.getAttribute(dataAttr);
+        }
+    }
+    
     // Update hint texts
     const holdPieceHint = document.querySelector('.hold-piece-hint');
     if (holdPieceHint) {
