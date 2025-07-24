@@ -17,6 +17,14 @@ let audioContext = null;
 let soundEnabled = true;
 let volume = 0.3; // Default volume (30%)
 
+// Individual sound toggles
+let soundOptions = {
+    move: true,
+    rotate: true,
+    drop: true,
+    line: true
+};
+
 // Initialize audio context
 function initAudio() {
     try {
@@ -55,14 +63,24 @@ function playBeep(frequency = 800, duration = 100, type = 'square') {
 
 // Sound effects for different actions
 const sounds = {
-    move: () => playBeep(600, 50, 'square'),      // Lower pitch, short
-    rotate: () => playBeep(800, 80, 'square'),    // Medium pitch
-    drop: () => playBeep(400, 120, 'sawtooth'),   // Lower pitch, longer
-    lineClear: () => playBeep(1000, 200, 'sine'), // High pitch, longer
-    tetris: () => playBeep(1200, 300, 'sine'),    // Highest pitch, longest
-    levelUp: () => playBeep(800, 150, 'triangle'), // Medium pitch, triangle wave
-    gameOver: () => playBeep(200, 500, 'sawtooth'), // Very low pitch, long
-    pause: () => playBeep(600, 100, 'square')     // Medium pitch
+    move: () => {
+        if (soundOptions.move) playBeep(600, 50, 'square');
+    },
+    rotate: () => {
+        if (soundOptions.rotate) playBeep(800, 80, 'square');
+    },
+    drop: () => {
+        if (soundOptions.drop) playBeep(400, 120, 'sawtooth');
+    },
+    lineClear: () => {
+        if (soundOptions.line) playBeep(1000, 200, 'sine');
+    },
+    tetris: () => {
+        if (soundOptions.line) playBeep(1200, 300, 'sine');
+    },
+    levelUp: () => playBeep(800, 150, 'triangle'), // Always play
+    gameOver: () => playBeep(200, 500, 'sawtooth'), // Always play
+    pause: () => playBeep(600, 100, 'square')     // Always play
 };
 
 // Toggle sound on/off
@@ -86,6 +104,60 @@ function updateSoundButton() {
             (currentLanguage === 'ru' ? 'Выключить звук' : 'Mute Sound') :
             (currentLanguage === 'ru' ? 'Включить звук' : 'Unmute Sound');
     }
+}
+
+// Update volume
+function updateVolume(value) {
+    volume = value / 100;
+    localStorage.setItem('tetrisVolume', value.toString());
+    
+    const volumeValue = document.getElementById('volume-value');
+    if (volumeValue) {
+        volumeValue.textContent = value + '%';
+    }
+    
+    // Play a test sound
+    if (soundEnabled && audioContext) {
+        sounds.move();
+    }
+}
+
+// Toggle individual sound options
+function toggleSoundOption(type) {
+    soundOptions[type] = !soundOptions[type];
+    localStorage.setItem(`tetrisSound_${type}`, soundOptions[type].toString());
+    
+    // Play a test sound if enabling
+    if (soundOptions[type] && soundEnabled && audioContext) {
+        sounds[type]();
+    }
+}
+
+// Load sound preferences
+function loadSoundPreferences() {
+    // Load volume
+    const savedVolume = localStorage.getItem('tetrisVolume');
+    if (savedVolume) {
+        const volumeSlider = document.getElementById('volume-slider');
+        const volumeValue = document.getElementById('volume-value');
+        if (volumeSlider && volumeValue) {
+            volumeSlider.value = savedVolume;
+            volumeValue.textContent = savedVolume + '%';
+            volume = parseInt(savedVolume) / 100;
+        }
+    }
+    
+    // Load sound options
+    Object.keys(soundOptions).forEach(type => {
+        const saved = localStorage.getItem(`tetrisSound_${type}`);
+        if (saved !== null) {
+            soundOptions[type] = saved === 'true';
+            const checkbox = document.getElementById(`${type}-sound`);
+            if (checkbox) {
+                checkbox.checked = soundOptions[type];
+            }
+        }
+    });
 }
 
 // ============================================================================
@@ -329,6 +401,22 @@ function updateLanguageUI() {
             soundTitle.textContent = soundTitle.getAttribute(dataAttr);
         }
     }
+    
+    const volumeLabel = document.querySelector('.volume-label');
+    if (volumeLabel) {
+        const dataAttr = `data-${currentLanguage}`;
+        if (volumeLabel.hasAttribute(dataAttr)) {
+            volumeLabel.textContent = volumeLabel.getAttribute(dataAttr);
+        }
+    }
+    
+    // Update sound option labels
+    document.querySelectorAll('.sound-option label').forEach((label, index) => {
+        const dataAttr = `data-${currentLanguage}`;
+        if (label.hasAttribute(dataAttr)) {
+            label.textContent = label.getAttribute(dataAttr);
+        }
+    });
     
     updateSoundButton();
 }
@@ -1266,6 +1354,7 @@ function initializeGame() {
             soundEnabled = savedSoundEnabled === 'true';
         }
         updateSoundButton();
+        loadSoundPreferences();
         
     } catch (error) {
         console.error('Error initializing game:', error);

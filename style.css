@@ -577,4 +577,84 @@ body {
 
 .sound-btn:active {
     transform: scale(0.95);
+}
+
+/* Volume Control */
+.volume-control {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.volume-label {
+    font-size: 10px;
+    color: #00ff00;
+    margin-bottom: 5px;
+    font-family: 'Courier New', monospace;
+}
+
+.volume-slider {
+    width: 100%;
+    height: 4px;
+    background: #001100;
+    outline: none;
+    border: 1px solid #00ff00;
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+}
+
+.volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    background: #00ff00;
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+.volume-slider::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    background: #00ff00;
+    cursor: pointer;
+    border-radius: 50%;
+    border: none;
+}
+
+.volume-value {
+    font-size: 9px;
+    color: #00cc00;
+    margin-top: 3px;
+    font-family: 'Courier New', monospace;
+}
+
+/* Sound Options */
+.sound-options {
+    margin-top: 10px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+}
+
+.sound-option {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 9px;
+    color: #00ff00;
+    font-family: 'Courier New', monospace;
+}
+
+.sound-option input[type="checkbox"] {
+    width: 10px;
+    height: 10px;
+    accent-color: #00ff00;
+    background: #001100;
+    border: 1px solid #00ff00;
+}
+
+.sound-option label {
+    cursor: pointer;
+    user-select: none;
 } 

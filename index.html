@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tetris 1984</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="stylesheet" href="style.css">
     
     <!-- Google Analytics -->
@@ -107,6 +108,29 @@
                 <div class="sound-title" data-ru="ЗВУК" data-en="SOUND">SOUND</div>
                 <div class="sound-buttons">
                     <button onclick="toggleSound()" class="sound-btn" id="sound-toggle" title="Mute Sound">🔊</button>
+                </div>
+                <div class="volume-control">
+                    <div class="volume-label" data-ru="Громкость" data-en="Volume">Volume</div>
+                    <input type="range" id="volume-slider" min="0" max="100" value="30" class="volume-slider" onchange="updateVolume(this.value)">
+                    <div class="volume-value" id="volume-value">30%</div>
+                </div>
+                <div class="sound-options">
+                    <div class="sound-option">
+                        <input type="checkbox" id="move-sound" checked onchange="toggleSoundOption('move')">
+                        <label for="move-sound" data-ru="Движение" data-en="Move">Move</label>
+                    </div>
+                    <div class="sound-option">
+                        <input type="checkbox" id="rotate-sound" checked onchange="toggleSoundOption('rotate')">
+                        <label for="rotate-sound" data-ru="Поворот" data-en="Rotate">Rotate</label>
+                    </div>
+                    <div class="sound-option">
+                        <input type="checkbox" id="drop-sound" checked onchange="toggleSoundOption('drop')">
+                        <label for="drop-sound" data-ru="Падение" data-en="Drop">Drop</label>
+                    </div>
+                    <div class="sound-option">
+                        <input type="checkbox" id="line-sound" checked onchange="toggleSoundOption('line')">
+                        <label for="line-sound" data-ru="Линии" data-en="Lines">Lines</label>
+                    </div>
                 </div>
             </div>
             <div class="android-icon" title="Android App Available" data-ru="Доступно приложение для Android" data-en="Android App Available">
