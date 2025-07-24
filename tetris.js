@@ -60,19 +60,28 @@ const strings = {
 };
 
 function selectLanguage(lang) {
+    console.log('Language selected:', lang);
     currentLanguage = lang;
     localStorage.setItem('tetrisLanguage', lang);
     
     // Hide language modal
-    document.getElementById('languageModal').style.display = 'none';
+    const modal = document.getElementById('languageModal');
+    if (modal) {
+        modal.style.display = 'none';
+        console.log('Language modal hidden');
+    }
     
     // Update UI text
     updateLanguageUI();
     
     // Start the game immediately
+    console.log('Starting game initialization...');
     setTimeout(() => {
         if (!window.tetrisController) {
+            console.log('Initializing game...');
             initializeGame();
+        } else {
+            console.log('Game already initialized');
         }
     }, 100);
 }
@@ -1030,30 +1039,84 @@ class TetrisController {
 // ============================================================================
 
 function initializeGame() {
-    const model = new TetrisModel();
-    const view = new TetrisView();
-    const controller = new TetrisController(model, view);
-    controller.start();
-    window.tetrisController = controller;
+    try {
+        console.log('Creating TetrisModel...');
+        const model = new TetrisModel();
+        
+        console.log('Creating TetrisView...');
+        const view = new TetrisView();
+        
+        console.log('Creating TetrisController...');
+        const controller = new TetrisController(model, view);
+        
+        console.log('Starting controller...');
+        controller.start();
+        
+        window.tetrisController = controller;
+        console.log('Game initialized successfully!');
+        
+        // Ensure the game board is visible
+        const gameBoard = document.getElementById('asciiBoard');
+        if (gameBoard) {
+            gameBoard.style.display = 'block';
+        }
+        
+    } catch (error) {
+        console.error('Error initializing game:', error);
+        // Fallback: try again after a short delay
+        setTimeout(() => {
+            console.log('Retrying game initialization...');
+            initializeGame();
+        }, 500);
+    }
 }
 
 // Initialize the game when the page loads
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM loaded, checking language preference...');
+    
     // Check for saved language preference
     if (!checkLanguagePreference()) {
+        console.log('No language preference found, showing modal');
         // Show language selection modal
-        document.getElementById('languageModal').style.display = 'flex';
+        const modal = document.getElementById('languageModal');
+        if (modal) {
+            modal.style.display = 'flex';
+        }
     } else {
+        console.log('Language preference found, starting game');
         // Language already selected, start game
         initializeGame();
     }
     
-    // Fallback: ensure game starts after 2 seconds if not already started
+    // Fallback: ensure game starts after 3 seconds if not already started
     setTimeout(() => {
         if (!window.tetrisController) {
             console.log('Fallback: Starting game...');
-            document.getElementById('languageModal').style.display = 'none';
+            const modal = document.getElementById('languageModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
             initializeGame();
         }
-    }, 2000);
+    }, 3000);
+    
+    // Debug: Add a manual start button for testing
+    setTimeout(() => {
+        if (!window.tetrisController) {
+            console.log('Adding debug start button...');
+            const debugBtn = document.createElement('button');
+            debugBtn.textContent = 'Start Game (Debug)';
+            debugBtn.style.position = 'fixed';
+            debugBtn.style.top = '10px';
+            debugBtn.style.right = '10px';
+            debugBtn.style.zIndex = '9999';
+            debugBtn.onclick = () => {
+                console.log('Manual start clicked');
+                document.getElementById('languageModal').style.display = 'none';
+                initializeGame();
+            };
+            document.body.appendChild(debugBtn);
+        }
+    }, 1000);
 }); 
