@@ -478,4 +478,59 @@ body {
 .lang-btn-small.active {
     background-color: #00ff00;
     color: #000;
+}
+
+/* Feedback Section */
+.feedback-section {
+    border: 1px solid #00ff00;
+    padding: 10px;
+    background-color: #001100;
+    margin-top: 15px;
+}
+
+.feedback-title {
+    font-size: 12px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 8px;
+    color: #00ff00;
+    font-family: 'Courier New', monospace;
+    text-transform: uppercase;
+}
+
+.feedback-buttons {
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+    margin-bottom: 8px;
+}
+
+.feedback-btn {
+    background-color: #001100;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    padding: 6px 10px;
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.feedback-btn:hover {
+    background-color: #00ff00;
+    color: #000;
+}
+
+.feedback-btn:active {
+    transform: scale(0.95);
+}
+
+.feedback-stats {
+    text-align: center;
+    font-size: 10px;
+    color: #00cc00;
+    font-family: 'Courier New', monospace;
 } 

@@ -80,6 +80,14 @@ function selectLanguage(lang) {
         if (!window.tetrisController) {
             console.log('Initializing game...');
             initializeGame();
+            
+            // Track game start in analytics
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'game_start', {
+                    'event_category': 'game',
+                    'event_label': 'tetris_1984'
+                });
+            }
         } else {
             console.log('Game already initialized');
         }
@@ -112,6 +120,58 @@ function updateLanguageButtons() {
             ruBtn.classList.add('active');
         }
     }
+}
+
+// Feedback System
+function submitFeedback(type) {
+    // Get current counts from localStorage
+    let likeCount = parseInt(localStorage.getItem('tetrisLikes') || '0');
+    let dislikeCount = parseInt(localStorage.getItem('tetrisDislikes') || '0');
+    
+    // Check if user has already voted
+    const hasVoted = localStorage.getItem('tetrisVoted');
+    if (hasVoted) {
+        alert(currentLanguage === 'ru' ? 'Вы уже проголосовали!' : 'You have already voted!');
+        return;
+    }
+    
+    // Update counts
+    if (type === 'like') {
+        likeCount++;
+        localStorage.setItem('tetrisLikes', likeCount.toString());
+    } else if (type === 'dislike') {
+        dislikeCount++;
+        localStorage.setItem('tetrisDislikes', dislikeCount.toString());
+    }
+    
+    // Mark user as voted
+    localStorage.setItem('tetrisVoted', 'true');
+    
+    // Update display
+    updateFeedbackDisplay();
+    
+    // Show thank you message
+    const message = currentLanguage === 'ru' ? 'Спасибо за отзыв!' : 'Thank you for your feedback!';
+    alert(message);
+    
+    // Track in analytics if available
+    if (typeof gtag !== 'undefined') {
+        gtag('event', 'feedback', {
+            'event_category': 'game',
+            'event_label': type
+        });
+    }
+}
+
+function updateFeedbackDisplay() {
+    const likeCount = localStorage.getItem('tetrisLikes') || '0';
+    const dislikeCount = localStorage.getItem('tetrisDislikes') || '0';
+    
+    const likeElement = document.getElementById('likeCount');
+    const dislikeElement = document.getElementById('dislikeCount');
+    
+    if (likeElement) likeElement.textContent = likeCount;
+    if (dislikeElement) dislikeElement.textContent = dislikeCount;
 }
 
 function updateLanguageUI() {
@@ -178,6 +238,9 @@ function updateLanguageUI() {
     
     // Update language button states
     updateLanguageButtons();
+    
+    // Update feedback display
+    updateFeedbackDisplay();
 }
 
 // Check for saved language preference

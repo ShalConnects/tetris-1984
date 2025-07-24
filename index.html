@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tetris 1984</title>
     <link rel="stylesheet" href="style.css">
+    
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'GA_MEASUREMENT_ID');
+    </script>
 </head>
 <body>
     <!-- Language Selection Modal -->
@@ -57,6 +66,22 @@
                 <div class="language-buttons-small">
                     <button onclick="switchLanguage('en')" class="lang-btn-small" id="lang-en">EN</button>
                     <button onclick="switchLanguage('ru')" class="lang-btn-small" id="lang-ru">RU</button>
+                </div>
+            </div>
+            
+            <!-- Feedback Section -->
+            <div class="feedback-section">
+                <div class="feedback-title" data-ru="ОТЗЫВ" data-en="FEEDBACK">FEEDBACK</div>
+                <div class="feedback-buttons">
+                    <button onclick="submitFeedback('like')" class="feedback-btn" title="I like this game!">
+                        👍 <span data-ru="Нравится" data-en="Like">Like</span>
+                    </button>
+                    <button onclick="submitFeedback('dislike')" class="feedback-btn" title="I don't like this game">
+                        👎 <span data-ru="Не нравится" data-en="Dislike">Dislike</span>
+                    </button>
+                </div>
+                <div class="feedback-stats">
+                    <span id="likeCount">0</span> 👍 / <span id="dislikeCount">0</span> 👎
                 </div>
             </div>
         </div>
